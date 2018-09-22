@@ -7,7 +7,7 @@ from unittest import TestCase
 
 import shutil
 
-from cachelite.cachelite import CacheLite
+from cachelite import CacheLite
 
 
 class TestCacheLite(TestCase):
@@ -17,48 +17,56 @@ class TestCacheLite(TestCase):
         self._cachelite = CacheLite(dir=self._temp_dir)
 
     def tearDown(self):
+        self._cachelite.clear()
         self._cachelite = None
         delattr(self, "_cachelite")
         if Path(self._temp_dir).exists():
             shutil.rmtree(self._temp_dir)
 
     def test_getitem(self):
-
         self._cachelite["abc"] = "def"
-        self.assertEqual(self._cachelite["abc"], "def")
+        self.assertEqual("def", self._cachelite["abc"])
 
-        with self.assertRaises( KeyError):
+        with self.assertRaises(KeyError):
             xyz = self._cachelite["xyz"]
 
-
     def test_setitem(self):
-
         self._cachelite["abc"] = "def"
-        self.assertEqual(self._cachelite["abc"], "def")
+        self.assertEqual("def", self._cachelite["abc"])
 
         self._cachelite["abc"] = "xyz"
-        self.assertEqual(self._cachelite["abc"], "xyz")
+        self.assertEqual("xyz", self._cachelite["abc"])
 
-    def testLen(self):
+    def test_len(self):
         self._cachelite["abc"] = "def"
-        self.assertEqual(len(self._cachelite), 1)
+        self.assertEqual(1, len(self._cachelite))
 
         self._cachelite["hij"] = "lmn"
-        self.assertEqual(len(self._cachelite), 2)
+        self.assertEqual(2, len(self._cachelite))
 
         self._cachelite["hij"] = 3
-        self.assertEqual(len(self._cachelite), 2)
+        self.assertEqual(2, len(self._cachelite))
 
         self._cachelite["opq"] = 15
-        self.assertEqual(len(self._cachelite), 3)
+        self.assertEqual(3, len(self._cachelite))
 
         del self._cachelite["abc"]
-        self.assertEqual(len(self._cachelite), 2)
+        self.assertEqual(2, len(self._cachelite))
 
         del self._cachelite["hij"]
         self.assertEqual(len(self._cachelite), 1)
 
+        self._cachelite["xyz"] = "def"
+        self.assertEqual(2, len(self._cachelite))
 
+        self._cachelite.clear()
+        self.assertEqual(0, len(self._cachelite))
+
+        with self.assertRaises(KeyError):
+            xyz = self._cachelite["abc"]
+
+        with self.assertRaises(KeyError):
+            xyz = self._cachelite["xyz"]
 
     def test_iterator(self):
         self._cachelite["abc"] = "def"
@@ -71,7 +79,7 @@ class TestCacheLite(TestCase):
         value2 = next(it)
         self.assertEqual(set(["abc", "opq"]), set([value1, value2]))
 
-        with self.assertRaises( StopIteration):
+        with self.assertRaises(StopIteration):
             next(it)
 
     def test_keys(self):
@@ -81,9 +89,7 @@ class TestCacheLite(TestCase):
         keys = list(self._cachelite.keys())
         self.assertEqual(set(["abc", "opq"]), set([keys[0], keys[1]]))
 
-
     def test_values(self):
-
         self._cachelite["abc"] = "def"
         self._cachelite["opq"] = "stu"
 

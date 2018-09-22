@@ -4,8 +4,10 @@ import hashlib
 import logging
 import os
 import pickle
-import time
 from pathlib import Path
+
+import time
+
 
 class CacheLite(object):
     log = logging.getLogger(__name__)
@@ -40,7 +42,7 @@ class CacheLite(object):
 
     def __iter__(self):
         files = self._dir.glob("*.pkl")
-        cache_it =  CacheLiteIterator(files)
+        cache_it = CacheLiteIterator(files)
         return cache_it
 
     def items(self):
@@ -159,7 +161,6 @@ class CacheLite(object):
             raise
         raise KeyError(key)
 
-
     def __delitem__(self, key):
         file_name = self._key_to_file_path(key)
         target_file = self._dir / file_name.with_suffix(".pkl")
@@ -184,15 +185,15 @@ class CacheLite(object):
                             cur_key, cur_value = data
                             if cur_key == key:
                                 target_pos = pos
-                        #delete or contents
+                        # delete or contents
                         if target_pos > -1:
                             del obj_contents[target_pos]
-                            #delete file if there are no contents
-                            if len(obj_contents)==0:
+                            # delete file if there are no contents
+                            if len(obj_contents) == 0:
                                 os.remove(target_file)
                                 return
                             else:
-                                #update contents
+                                # update contents
                                 with open(lock_file, "w") as f:
                                     f.close()
                                 str_contents = pickle.dumps(obj_contents)
@@ -222,7 +223,7 @@ class CacheLite(object):
             raise KeyError(key)
 
     @staticmethod
-    def _read_and_verify_contents_from_file(target_file ):
+    def _read_and_verify_contents_from_file(target_file):
         with open(target_file, "rb") as f:
             sig, bin_data = pickle.load(f)
         r = CacheLite._verify_signature(bin_data, sig)
@@ -265,20 +266,23 @@ class CacheLite(object):
             ]
         )
 
+
 class CacheLiteError(BaseException):
     pass
+
 
 class CacheLiteWriteError(CacheLiteError):
     pass
 
+
 class CacheLiteReadError(CacheLiteError, KeyError):
     pass
 
-class CacheLiteIterator:
 
-    RET_KEY_ONLY=1
-    RET_VALUE_ONLY=2
-    RET_KEY_VALUE=3
+class CacheLiteIterator:
+    RET_KEY_ONLY = 1
+    RET_VALUE_ONLY = 2
+    RET_KEY_VALUE = 3
 
     def __init__(self, file_list, ret_value=RET_KEY_ONLY):
 
@@ -292,7 +296,7 @@ class CacheLiteIterator:
         return self
 
     def __next__(self):
-        while(True):
+        while (True):
             try:
                 with open(self._cur_file_path, "rb") as f:
                     sig, bin_data = pickle.load(f)
