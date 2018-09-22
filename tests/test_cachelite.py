@@ -54,7 +54,11 @@ class TestCacheLite(TestCase):
         self.assertEqual(2, len(self._cachelite))
 
         del self._cachelite["hij"]
-        self.assertEqual(len(self._cachelite), 1)
+        self.assertEqual(1, len(self._cachelite))
+
+    def test_clear(self):
+        self._cachelite["abc"] = "def"
+        self.assertEqual(1, len(self._cachelite))
 
         self._cachelite["xyz"] = "def"
         self.assertEqual(2, len(self._cachelite))

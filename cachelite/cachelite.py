@@ -45,6 +45,11 @@ class CacheLite(object):
         cache_it = CacheLiteIterator(files)
         return cache_it
 
+    def clear(self):
+        files = self._dir.glob("*.pkl")
+        for file_path in files:
+            file_path.unlink()
+
     def items(self):
         files = self._dir.glob("*.pkl")
         return CacheLiteIterator(files, ret_value=CacheLiteIterator.RET_KEY_VALUE)

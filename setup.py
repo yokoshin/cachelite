@@ -1,7 +1,7 @@
 from setuptools import setup
 import os
 
-version = "0.9.0"
+version = "0.9.1"
 
 def write_version():
     with open(os.path.join("cachelite", "version.py"), 'w') as fp:
